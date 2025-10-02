@@ -14,6 +14,8 @@
       devShells = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+
+          tmux-mem-cpu-load = pkgs.callPackage ./tmux-mem-cpu-load.nix {};
         in
         {
           default = (pkgs.mkShell.override {
@@ -33,6 +35,9 @@
               # Build tools that will use LLVM 21
               pkgs.cmake
               pkgs.ninja
+
+              # Other tools
+              tmux-mem-cpu-load
             ];
 
             shellHook = ''
