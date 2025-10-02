@@ -17,17 +17,40 @@ if [ -n "$NIX_BASH" ]; then
 fi
 
 # The various escape codes that we can use to color our prompt.
-        RED="\[\033[38;5;160m\]"   # Bright red
-     YELLOW="\[\033[38;5;220m\]"   # Bright yellow
-      GREEN="\[\033[38;5;114m\]"   # Vim-like green
-       BLUE="\[\033[38;5;75m\]"    # Sky blue
-     PURPLE="\[\033[38;5;141m\]"   # Vim purple
-  LIGHT_RED="\[\033[38;5;203m\]"   # Light red
-LIGHT_GREEN="\[\033[38;5;120m\]"   # Light green
-      WHITE="\[\033[38;5;231m\]"   # Pure white
- LIGHT_GRAY="\[\033[38;5;250m\]"   # Light gray
-       CYAN="\[\033[38;5;87m\]"    # Bright cyan
- COLOR_NONE="\[\e[0m\]"
+         RED="\[\033[38;5;160m\]"   # Bright red
+      YELLOW="\[\033[38;5;220m\]"   # Bright yellow
+       GREEN="\[\033[38;5;114m\]"   # Vim-like green
+        BLUE="\[\033[38;5;75m\]"    # Sky blue
+      PURPLE="\[\033[38;5;141m\]"   # Vim purple
+   LIGHT_RED="\[\033[38;5;203m\]"   # Light red
+ LIGHT_GREEN="\[\033[38;5;120m\]"   # Light green
+       WHITE="\[\033[38;5;231m\]"   # Pure white
+  LIGHT_GRAY="\[\033[38;5;250m\]"   # Light gray
+        CYAN="\[\033[38;5;87m\]"    # Bright cyan
+LIGHT_ORANGE="\[\033[38;5;215m\]"   # Light orange (peach)
+      ORANGE="\[\033[38;5;208m\]"   # Vibrant orange
+        PINK="\[\033[38;5;211m\]"   # Soft pink
+  LIGHT_BLUE="\[\033[38;5;117m\]"   # Pale blue
+        TEAL="\[\033[38;5;80m\]"    # Teal/turquoise
+       PEACH="\[\033[38;5;223m\]"   # Peachy yellow
+    LAVENDER="\[\033[38;5;183m\]"   # Light lavender
+ LIGHT_CORAL="\[\033[38;5;217m\]"   # Light coral
+  COLOR_NONE="\[\e[0m\]"
+
+# Determine the name of the nix shell environment.
+function set_nix_env_name() {
+    if [ -n "$IN_NIX_SHELL" ]; then
+        if [ -n "$name" ]; then
+            # NIX_ENV_NAME_FOR_PROMPT="${LIGHT_ORANGE}[${name}] ${COLOR_NONE}"
+            NIX_ENV_NAME_FOR_PROMPT="${LIGHT_CORAL}[${name}] ${COLOR_NONE}"
+        else
+            # NIX_ENV_NAME_FOR_PROMPT="${LIGHT_ORANGE}[nix-shell] ${COLOR_NONE}"
+            NIX_ENV_NAME_FOR_PROMPT="${LIGHT_CORAL}[nix-shell] ${COLOR_NONE}"
+        fi
+    else
+        NIX_ENV_NAME_FOR_PROMPT=""
+    fi
+}
 
 # Determine git branch name.
 function parse_git_branch(){
@@ -124,6 +147,9 @@ function set_bash_prompt () {
   # Stop timer.
   timer_stop
 
+  # Set the NIX_ENV_NAME_FOR_PROMPT variable.
+  set_nix_env_name
+
   # Set the PYTHON_VIRTUALENV variable.
   set_virtualenv
 
@@ -131,7 +157,7 @@ function set_bash_prompt () {
   set_git_branch
 
   # Set the bash prompt variable.
-  PS1="${PYTHON_VIRTUALENV}${CYAN}\u@\h${COLOR_NONE}:${YELLOW}\w${COLOR_NONE}${BRANCH}${GREEN}[$(format_time ${BASH_COMMAND_TIMER_SHOW:-0})]${COLOR_NONE} ${PROMPT_SYMBOL} "
+  PS1="${NIX_ENV_NAME_FOR_PROMPT}${PYTHON_VIRTUALENV}${CYAN}\u@\h${COLOR_NONE}:${YELLOW}\w${COLOR_NONE}${BRANCH}${GREEN}[$(format_time ${BASH_COMMAND_TIMER_SHOW:-0})]${COLOR_NONE} ${PROMPT_SYMBOL} "
 }
 
 # Tell bash to execute this function just before displaying its prompt.
