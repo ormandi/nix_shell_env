@@ -13,7 +13,8 @@
 
 # Use the bash from Nix if available.
 if [ -n "$NIX_BASH" ]; then
-  alias bash='exec $NIX_BASH --rcfile $NIX_BASHRC'
+  alias bash="exec $NIX_BASH --rcfile $NIX_BASHRC"
+  alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
 fi
 
 # The various escape codes that we can use to color our prompt.

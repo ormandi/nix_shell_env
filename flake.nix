@@ -44,12 +44,17 @@
               # Export bash path for use in aliases
               export NIX_BASH="${pkgs.bash}/bin/bash"
               export NIX_BASHRC="${self}/bashrc"
-              export PATH="$(dirname $NIX_BASH):$PATH"
+
+              # Export tmux path.
+              export NIX_TMUX="${pkgs.tmux}/bin/tmux"
+              export NIX_TMUX_CONF="${self}/tmux.conf"
 
               echo "Development Environment"
               echo "======================="
               echo "NIX_BASH is: $NIX_BASH"
               echo "Bash: $($NIX_BASH --version | head -n 1)"
+              echo "NIX_TMUX is: $NIX_TMUX"
+              echo "Tmux: $($NIX_TMUX -V | head -n 1)"
               echo "Compiler: $(clang++ --version | head -n 1)"
               echo "CMake: $(cmake --version | head -n 1)"
               echo ""
