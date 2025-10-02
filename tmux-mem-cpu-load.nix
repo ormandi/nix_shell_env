@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "ormandi";
     repo = "tmux-mem-cpu-load";
-    rev = "show_cpu_show_ram";
+    rev = "e027f746ab4db4ff0520439d53f6b0257c68ab44";
     hash = "sha256-vovlwgQ/FZ5+CmXmNHKrQrzIeSJZ6fPmYFW8RHaynYc=";
   };
 
