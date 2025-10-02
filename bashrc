@@ -141,9 +141,6 @@ PROMPT_COMMAND=set_bash_prompt
 alias ls='ls --color=auto'
 alias ll='ls -lah'
 
-# Add Homebrew to the `PATH`.
-export PATH="/opt/homebrew/bin/:${PATH}"
-
 # Add Rust to `PATH`
 . "$HOME/.cargo/env"
 
@@ -154,7 +151,6 @@ pyenv init - > $temp_file
 source $temp_file
 pyenv virtualenv-init - > $temp_file
 source $temp_file
-
 
 # Bash completion.
 # Use bash-completion, if available
@@ -175,11 +171,6 @@ alias start_gcuda='gcloud compute instances start "cuda-examples-dev" --zone="us
 export PATH="$PATH:/Users/ormandi/.cache/lm-studio/bin"
 # End of LM Studio CLI section
 
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/ormandi/.cache/lm-studio/bin"
-# End of LM Studio CLI section
-
 # ZVM
 export ZVM_INSTALL="$HOME/.zvm/self"
 export PATH="$PATH:$HOME/.zvm/bin"
@@ -189,6 +180,6 @@ export PATH="$PATH:$ZVM_INSTALL/"
 alias pane-title='printf "\033]2;%s\033\\" "$1"'
 
 # Show aliases.
-echo "Available aliases"
-echo "================="
-alias
+# echo "Available aliases"
+# echo "================="
+# alias

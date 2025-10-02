@@ -39,6 +39,7 @@
               # Export bash path for use in aliases
               export NIX_BASH="${pkgs.bash}/bin/bash"
               export NIX_BASHRC="${self}/bashrc"
+              export PATH="$NIX_BASH:$PATH"
 
               echo "Development Environment"
               echo "======================="
