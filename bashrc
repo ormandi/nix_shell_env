@@ -11,6 +11,11 @@
 #
 #   https://gist.github.com/31967
 
+# Use the bash from Nix if available.
+if [ -n "$NIX_BASH" ]; then
+  alias bash='exec $NIX_BASH --rcfile $NIX_BASHRC'
+fi
+
 # The various escape codes that we can use to color our prompt.
         RED="\[\033[38;5;160m\]"   # Bright red
      YELLOW="\[\033[38;5;220m\]"   # Bright yellow
@@ -182,3 +187,8 @@ export PATH="$PATH:$ZVM_INSTALL/"
 
 # tmux pane title alias.
 alias pane-title='printf "\033]2;%s\033\\" "$1"'
+
+# Show aliases.
+echo "Available aliases"
+echo "================="
+alias

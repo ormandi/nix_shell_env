@@ -2,89 +2,57 @@
   description = "My portable shell environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs = { self, nixpkgs }:
     let
-      # Support ARM macOS and x86_64 Linux only
       systems = [ "x86_64-linux" "aarch64-darwin" ];
-      
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
       devShells = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-          
-          # Create wrapper scripts with custom configs
-          wrapperScripts = pkgs.writeScriptBin "setup-wrappers" ''
-            #!${pkgs.bash}/bin/bash
-            mkdir -p $out/bin
-            
-            # Bash wrapper
-            cat > $out/bin/bash << 'EOF'
-            #!${pkgs.bash}/bin/bash
-            exec ${pkgs.bash}/bin/bash --rcfile ${self}/bashrc "$@"
-            EOF
-            chmod +x $out/bin/bash
-            
-            # Tmux wrapper
-            cat > $out/bin/tmux << 'EOF'
-            #!${pkgs.bash}/bin/bash
-            exec ${pkgs.tmux}/bin/tmux -f ${self}/tmux.conf "$@"
-            EOF
-            chmod +x $out/bin/tmux
-            
-            # Vim wrapper
-            cat > $out/bin/vim << 'EOF'
-            #!${pkgs.bash}/bin/bash
-            export VIMINIT="source ${self}/vimrc"
-            exec ${pkgs.vim}/bin/vim "$@"
-            EOF
-            chmod +x $out/bin/vim
-          '';
-          
         in
         {
-          default = pkgs.mkShell {
+          default = (pkgs.mkShell.override {
+            # Use LLVM 21 as the standard environment
+            stdenv = pkgs.llvmPackages_21.stdenv;
+          }) {
             buildInputs = [
-              # Core tools (wrapped)
               pkgs.bash
               pkgs.tmux
               pkgs.vim
               
-              # Development tools
-              # pkgs.pyenv
-              # pkgs.uv
-              # pkgs.zig
-              # pkgs.llvm
-              # pkgs.cmake
-              # pkgs.ninja
-              # pkgs.bazelisk
-              # pkgs.jq
-              # pkgs.nmap
-              # pkgs.automake
-              # pkgs.git
+              # LLVM 21 development tools
+              pkgs.llvmPackages_21.clang-tools  # clang-format, clang-tidy, clangd
+              pkgs.llvmPackages_21.lldb         # Debugger
+              pkgs.llvmPackages_21.lld          # Linker
               
-              # Wrapper scripts
-              wrapperScripts
+              # Build tools that will use LLVM 21
+              pkgs.cmake
+              pkgs.ninja
             ];
-            
+
             shellHook = ''
-              # Run the wrapper script setup
-              ${wrapperScripts}/bin/setup-wrappers
-              
-              # Add wrappers to PATH first (so they override the originals)
-              export PATH="$out/bin:$PATH"
-              
-              echo "Environment ready!"
-              echo "All tools configured with custom configs"
+              # Export bash path for use in aliases
+              export NIX_BASH="${pkgs.bash}/bin/bash"
+              export NIX_BASHRC="${self}/bashrc"
+
+              echo "Development Environment"
+              echo "======================="
+              echo "NIX_BASH is: $NIX_BASH"
+              echo "Bash: $($NIX_BASH --version | head -n 1)"
+              echo "Compiler: $(clang++ --version | head -n 1)"
+              echo "CMake: $(cmake --version | head -n 1)"
               echo ""
-              echo "Available tools:"
-              echo "  bash, vim, tmux (with custom configs)"
-              echo "  pyenv, uv, zig, llvm, cmake, ninja"
-              echo "  bazelisk, jq, nmap, automake, git"
+
+              # Launch bash with custom bashrc
+              if [ -z "$NIX_SHELL_BASH_LOADED" ]; then
+                  export NIX_SHELL_BASH_LOADED=1
+                  exec ${pkgs.bash}/bin/bash --rcfile ${self}/bashrc
+              fi
             '';
           };
         });
