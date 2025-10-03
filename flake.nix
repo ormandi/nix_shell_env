@@ -3,9 +3,13 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    tmux-mem-cpu-load = {
+      url = "github:ormandi/tmux-mem-cpu-load/show_cpu_show_ram";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, tmux-mem-cpu-load }:
     let
       systems = [ "x86_64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -14,8 +18,6 @@
       devShells = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-
-          tmux-mem-cpu-load = pkgs.callPackage ./tmux-mem-cpu-load.nix {};
         in
         {
           default = (pkgs.mkShell.override {
@@ -37,7 +39,7 @@
               pkgs.ninja
 
               # Other tools
-              tmux-mem-cpu-load
+              tmux-mem-cpu-load.packages.${system}.default
             ];
 
             shellHook = ''
