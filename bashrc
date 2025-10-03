@@ -13,7 +13,13 @@
 
 # Use the bash from Nix if available.
 if [ -n "$NIX_BASH" ]; then
-  alias bash="exec $NIX_BASH --rcfile $NIX_BASHRC"
+  export SHELL="${HOME}/.nix_shell_wrapper.sh"
+  cat << EOF > $SHELL
+#!/usr/bin/env bash
+$NIX_BASH --rcfile $NIX_BASHRC
+EOF
+  chmod 755 ${SHELL}
+  alias bash="exec $SHELL"
   alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
 fi
 
@@ -172,12 +178,12 @@ alias ll='ls -lah'
 . "$HOME/.cargo/env"
 
 # Initialize pyenv.
-eval $(pyenv init --path)
-export temp_file=$(mktemp)
-pyenv init - > $temp_file
-source $temp_file
-pyenv virtualenv-init - > $temp_file
-source $temp_file
+# eval $(pyenv init --path)
+# export temp_file=$(mktemp)
+# pyenv init - > $temp_file
+# source $temp_file
+# pyenv virtualenv-init - > $temp_file
+# source $temp_file
 
 # Bash completion.
 # Use bash-completion, if available

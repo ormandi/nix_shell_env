@@ -24,21 +24,27 @@
             # Use LLVM 21 as the standard environment
             stdenv = pkgs.llvmPackages_21.stdenv;
           }) {
-            buildInputs = [
-              pkgs.bash
-              pkgs.tmux
-              pkgs.vim
+            buildInputs = with pkgs; [
+              bash
+              bash-completion
+              tmux
+              vim
+              git
               
               # LLVM 21 development tools
-              pkgs.llvmPackages_21.clang-tools  # clang-format, clang-tidy, clangd
-              pkgs.llvmPackages_21.lldb         # Debugger
-              pkgs.llvmPackages_21.lld          # Linker
+              llvmPackages_21.clang-tools  # clang-format, clang-tidy, clangd
+              llvmPackages_21.lldb         # Debugger
+              llvmPackages_21.lld          # Linker
               
               # Build tools that will use LLVM 21
-              pkgs.cmake
-              pkgs.ninja
+              cmake
+              ninja
+
+              # Python
+              pyenv
 
               # Other tools
+              util-linux
               tmux-mem-cpu-load.packages.${system}.default
             ];
 
@@ -59,6 +65,7 @@
               echo "Tmux: $($NIX_TMUX -V | head -n 1)"
               echo "Compiler: $(clang++ --version | head -n 1)"
               echo "CMake: $(cmake --version | head -n 1)"
+              echo "Pyenv: $(pyenv --version | head -n 1)"
               echo ""
 
               # Launch bash with custom bashrc
