@@ -39,6 +39,15 @@
               # Build tools that will use LLVM 21
               cmake
               ninja
+              gnumake
+
+              # Libraries.
+              bzip2
+              libffi
+              ncurses
+              openssl
+              readline
+              zlib
 
               # Python
               pyenv
