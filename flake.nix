@@ -42,6 +42,9 @@
 
               # Python
               pyenv
+              ruff
+              ty
+              uv
 
               # Other tools
               gawk
