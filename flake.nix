@@ -44,6 +44,8 @@
               pyenv
 
               # Other tools
+              gawk
+              gnused
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
             ];

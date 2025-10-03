@@ -174,16 +174,15 @@ PROMPT_COMMAND=set_bash_prompt
 alias ls='ls --color=auto'
 alias ll='ls -lah'
 
-# Add Rust to `PATH`
-. "$HOME/.cargo/env"
+if [ -z "$PYENV_LOADING" ]; then
+    export PYENV_LOADING="true"
 
-# Initialize pyenv.
-# eval $(pyenv init --path)
-# export temp_file=$(mktemp)
-# pyenv init - > $temp_file
-# source $temp_file
-# pyenv virtualenv-init - > $temp_file
-# source $temp_file
+    export PYENV_INIT_TEMP_FILE=$(mktemp)
+    pyenv init - --no-push-path --no-rehash $SHELL > $PYENV_INIT_TEMP_FILE
+    source $PYENV_INIT_TEMP_FILE
+
+    unset PYENV_LOADING
+fi
 
 # Bash completion.
 # Use bash-completion, if available
