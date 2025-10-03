@@ -28,16 +28,8 @@ mkdir -p ~/.config/nix
 echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 ```
 
-## Get configuration files of the shell environment
-
-E.g. by running the following command assuming `git` is available on the host system:
+# Use the shell environment
 
 ```bash
-git clone https://github.com/ormandi/nix_shell_env.git
-```
-
-## Use the shell environment
-
-```bash
-nix develop
+nix develop github:ormandi/nix_shell_env
 ```
