@@ -421,8 +421,8 @@ call plug#end()
 
 " Auto-install missing plugins on cold start
 if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-    echom "Installing missing plugins... Vim will exits automatically after this."
     PlugInstall --sync
+    echom "Missing plugins are installed. Vim exits automatically now. Restart it!"
     " Restart vim after installation
     qa!
 endif
