@@ -1,5 +1,5 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Maintainer: 
+" Maintainer:
 "       Amir Salihefendic — @amix3k
 "
 " Awesome_version:
@@ -30,6 +30,10 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Make sure that `vim` is never in compatible mode.
+set nocompatible
+
 " Sets how many lines of history VIM has to remember
 set history=500
 
@@ -48,7 +52,7 @@ let mapleader = ","
 " Fast saving
 nmap <leader>w :w!<cr>
 
-" :W sudo saves the file 
+" :W sudo saves the file
 " (useful for handling the permission-denied error)
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
@@ -60,7 +64,7 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 set so=7
 
 " Avoid garbled characters in Chinese language windows OS
-let $LANG='en' 
+let $LANG='en'
 set langmenu=en
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
@@ -92,23 +96,23 @@ set whichwrap+=<,>,h,l
 " Ignore case when searching
 set ignorecase
 
-" When searching try to be smart about cases 
+" When searching try to be smart about cases
 set smartcase
 
 " Highlight search results
 set hlsearch
 
 " Makes search act like search in modern browsers
-set incsearch 
+set incsearch
 
 " Don't redraw while executing macros (good performance config)
-set lazyredraw 
+set lazyredraw
 
 " For regular expressions turn magic on
 set magic
 
 " Show matching brackets when text indicator is over them
-set showmatch 
+set showmatch
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
@@ -131,7 +135,7 @@ set foldcolumn=0
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
-syntax enable 
+syntax enable
 
 " Enable 256 colors palette in Gnome Terminal
 if $COLORTERM == 'gnome-terminal'
@@ -238,10 +242,10 @@ map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
 
 " Useful mappings for managing tabs
-map <leader>tn :tabnew 
+map <leader>tn :tabnew
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove 
+map <leader>tm :tabmove
 map <leader>tf :tabnext<CR>
 map <leader>tb :tabprev<CR>
 
@@ -258,7 +262,7 @@ map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Specify the behavior when switching between buffers 
+" Specify the behavior when switching between buffers
 try
   set switchbuf=useopen,usetab,newtab
   set stal=2
@@ -268,27 +272,6 @@ endtry
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-
-"""""""""""""""""""""""""""""""""
-" => Status line and Appearance 
-"""""""""""""""""""""""""""""""""
-" Always show the status line
-set laststatus=2
-
-" Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
-
-" The indicator `-- INSERT --` is unnecessary anymore because the mode
-" information is displayed in the statusline.`
-set noshowmode
-
-" Configure the colorscheme of Lightline statusbar.
-" Alternatives: solarized, wombat, powerline, jellybeans
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
-      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
-      \ }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
@@ -388,7 +371,7 @@ endfunction
 
 function! CmdLine(str)
     call feedkeys(":" . a:str)
-endfunction 
+endfunction
 
 function! VisualSelection(direction, extra_filter) range
     let l:saved_reg = @"
@@ -412,6 +395,12 @@ endfunction
 " => Vim Plugins (using vim-plug)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Get the directory containing this vimrc file
+let s:vimrc_dir = expand('<sfile>:p:h')
+
+" Source `plug.vim` from the same directory
+execute 'source ' . s:vimrc_dir . '/plug.vim'
+
 " Specify a directory for plugins
 call plug#begin('~/.vim/plugged')
 
@@ -429,6 +418,42 @@ Plug 'ggml-org/llama.vim'
 
 " Initialize plugin system
 call plug#end()
+
+" Auto-install missing plugins on cold start
+if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+    echom "Installing missing plugins... Vim will exits automatically after this."
+    PlugInstall --sync
+    " Restart vim after installation
+    qa!
+endif
+
+" IMPORTANT: Manually add plugin paths to runtimepath when using -u flag
+" VimPlug doesn't do this automatically when not using default vimrc location
+for plugin_dir in values(g:plugs)
+    execute 'set runtimepath+=' . plugin_dir.dir
+endfor
+
+
+"""""""""""""""""""""""""""""""""
+" => Status line and Appearance
+"""""""""""""""""""""""""""""""""
+" Always show the status line
+set laststatus=2
+
+" Format the status line
+set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
+
+" The indicator `-- INSERT --` is unnecessary anymore because the mode
+" information is displayed in the statusline.`
+set noshowmode
+
+" Configure the colorscheme of Lightline statusbar.
+" Alternatives: solarized, wombat, powerline, jellybeans
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
+      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
+      \ }
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
