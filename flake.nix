@@ -30,12 +30,12 @@
               tmux
               vim
               git
-              
+
               # LLVM 21 development tools
               llvmPackages_21.clang-tools  # clang-format, clang-tidy, clangd
               llvmPackages_21.lldb         # Debugger
               llvmPackages_21.lld          # Linker
-              
+
               # Build tools that will use LLVM 21
               cmake
               ninja
@@ -71,12 +71,18 @@
               export NIX_TMUX="${pkgs.tmux}/bin/tmux"
               export NIX_TMUX_CONF="${self}/tmux.conf"
 
+              # Export vim path.
+              export NIX_VIM="${pkgs.vim}/bin/vim"
+              export NIX_VIMRC="${self}/vimrc"
+
               echo "Development Environment"
               echo "======================="
               echo "NIX_BASH is: $NIX_BASH"
               echo "Bash: $($NIX_BASH --version | head -n 1)"
               echo "NIX_TMUX is: $NIX_TMUX"
               echo "Tmux: $($NIX_TMUX -V | head -n 1)"
+              echo "NIX_VIM is: $NIX_VIM"
+              echo "Vim: $($NIX_VIM --version | head -n 1)"
               echo "Compiler: $(clang++ --version | head -n 1)"
               echo "CMake: $(cmake --version | head -n 1)"
               echo "Pyenv: $(pyenv --version | head -n 1)"

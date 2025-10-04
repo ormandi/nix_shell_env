@@ -21,6 +21,7 @@ EOF
   chmod 755 ${SHELL}
   alias bash="exec $SHELL"
   alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
+  alias vim="$NIX_VIM -u $NIX_VIMRC"
 fi
 
 # The various escape codes that we can use to color our prompt.

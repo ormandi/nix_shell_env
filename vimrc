@@ -427,7 +427,7 @@ if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
     qa!
 endif
 
-" IMPORTANT: Manually add plugin paths to runtimepath when using -u flag
+" Manually add plugin paths to runtimepath when using -u flag
 " VimPlug doesn't do this automatically when not using default vimrc location
 for plugin_dir in values(g:plugs)
     execute 'set runtimepath+=' . plugin_dir.dir
