@@ -123,9 +123,8 @@ if has("gui_macvim")
     autocmd GUIEnter * set vb t_vb=
 endif
 
-
 " Add a bit extra margin to the left
-set foldcolumn=1
+set foldcolumn=0
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -141,7 +140,6 @@ endif
 
 try
     colorscheme default
-    " colorscheme habamax
 catch
 endtry
 
@@ -191,7 +189,18 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
-set rnu "Relative numbers
+
+" Line numbers
+set number "Line numbers
+" set rnu "Relative numbers
+
+" Cursorline
+set cursorline
+set cursorlineopt=number
+
+" Solarized Dark inspired line numbers
+highlight LineNr ctermfg=240 ctermbg=NONE guifg=#586e75 guibg=NONE
+highlight CursorLineNr cterm=bold ctermfg=153 ctermbg=NONE gui=bold guifg=#81cff6 guibg=NONE
 
 
 """"""""""""""""""""""""""""""
@@ -342,6 +351,8 @@ map <leader>x :e ~/buffer.md<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
+"Remove all trailing whitespace
+nnoremap <leader>tt :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
@@ -413,6 +424,9 @@ Plug 'tpope/vim-surround'
 " Language server protocol client + autocompletion:
 Plug 'dense-analysis/ale'
 
+" LLM extension.
+Plug 'ggml-org/llama.vim'
+
 " Initialize plugin system
 call plug#end()
 
@@ -422,16 +436,17 @@ call plug#end()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " ALE style
+let g:ale_sign_column_always = 0
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '->'
-set signcolumn=number
 
-highlight clear ALEErrorSign
-highlight clear ALEWarningSign
-highlight clear SignColumn
-" highlight SignColumn ctermbg=darkgrey
+" Make ALE sign column transparent
+highlight SignColumn ctermbg=NONE guibg=NONE
+highlight ALEErrorSign ctermbg=NONE guibg=NONE ctermfg=red
+highlight ALEWarningSign ctermbg=NONE guibg=NONE ctermfg=yellow
 
-let g:ale_sign_column_always = 1
+" " Optional: only show sign column when there are errors/warnings
+let g:ale_sign_column_always = 0
 
 " ALE linters (don't use `flake8`):
 let g:ale_linters = {
