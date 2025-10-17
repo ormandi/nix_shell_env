@@ -172,8 +172,13 @@ function set_bash_prompt () {
 PROMPT_COMMAND=set_bash_prompt
 
 # Make `ls` colorful by default.
-alias ls='ls --color=auto'
-alias ll='ls -lah'
+alias ls='eza -l --git'
+alias ll='eza -lah --git'
+alias llt='eza -lah --git --tree'
+alias llt2='eza -lah --git --tree --level 2'
+alias llt3='eza -lah --git --tree --level 3'
+alias llt4='eza -lah --git --tree --level 4'
+alias llt5='eza -lah --git --tree --level 5'
 
 if [ -z "$PYENV_LOADING" ]; then
     export PYENV_LOADING="true"

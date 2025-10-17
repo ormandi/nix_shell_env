@@ -413,6 +413,9 @@ Plug 'tpope/vim-surround'
 " Language server protocol client + autocompletion:
 Plug 'dense-analysis/ale'
 
+" Git
+Plug 'tpope/vim-fugitive'
+
 " LLM extension.
 Plug 'ggml-org/llama.vim'
 
