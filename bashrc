@@ -205,9 +205,8 @@ alias ssh_gcuda='gcloud compute ssh "cuda-examples-dev" --zone "us-central1-a" -
 alias stop_gcuda='gcloud compute instances stop "cuda-examples-dev" --zone="us-central1-a"  --project="cudaexamples"'
 alias start_gcuda='gcloud compute instances start "cuda-examples-dev" --zone="us-central1-a"  --project="cudaexamples"'
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/ormandi/.cache/lm-studio/bin"
-# End of LM Studio CLI section
+# Add Claude code to the $PATH
+export PATH="$PATH:~/.local/bin/claude"
 
 # ZVM
 export ZVM_INSTALL="$HOME/.zvm/self"
