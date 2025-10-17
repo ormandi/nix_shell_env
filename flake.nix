@@ -56,6 +56,8 @@
               uv
 
               # Other tools
+              eza
+              bat
               gawk
               gnused
               util-linux
