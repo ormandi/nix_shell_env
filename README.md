@@ -1,5 +1,3 @@
-!!! This is work in progress, use it with cautions. !!!
-
 # Nix-based Environment
 
 This describes a portable, preconfigured shell environment.
@@ -17,7 +15,13 @@ In a terminal, run the following command:
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
 ```
 
-### Linux
+### Debian
+
+```bash
+sudo apt update
+sudo apt install nix-setup-systemd
+sudo adduser $(whoami) nix-users
+```
 
 ### Configure `nix` flakes
 
@@ -31,5 +35,5 @@ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 # Use the shell environment
 
 ```bash
-nix develop github:ormandi/nix_shell_env
+nix develop github:ormandi/nix_shell_env --refresh
 ```
