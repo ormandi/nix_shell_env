@@ -437,6 +437,10 @@ endfor
 """""""""""""""""""""""""""""""""
 " => Status line and Appearance
 """""""""""""""""""""""""""""""""
+" Ensure that color terminal is assumed.
+set t_Co=256
+set termguicolors
+
 " Always show the status line
 set laststatus=2
 
