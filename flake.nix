@@ -11,7 +11,7 @@
 
   outputs = { self, nixpkgs, tmux-mem-cpu-load }:
     let
-      systems = [ "x86_64-linux" "aarch64-darwin" ];
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
