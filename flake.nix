@@ -27,6 +27,7 @@
             buildInputs = with pkgs; [
               bash
               bash-completion
+              pkg-config
               tmux
               vim
               git
@@ -42,12 +43,19 @@
               gnumake
 
               # Libraries.
-              bzip2
-              libffi
-              ncurses
-              openssl
-              readline
-              zlib
+              bzip2.dev
+              curl.dev
+              libffi.dev
+              ncurses.dev
+              libxml2.dev
+              openssl.dev
+              readline.dev
+              sqlite.dev
+              tk.dev
+              wget.dev
+              xmlsec.dev
+              xz.dev  # provides liblzma
+              zlib.dev
 
               # Python
               pyenv
