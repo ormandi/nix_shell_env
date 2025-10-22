@@ -31,6 +31,7 @@
               tmux
               vim
               git
+              wget
 
               # LLVM 21 development tools
               llvmPackages_21.clang-tools  # clang-format, clang-tidy, clangd
@@ -52,7 +53,6 @@
               readline.dev
               sqlite.dev
               tk.dev
-              wget.dev
               xmlsec.dev
               xz.dev  # provides liblzma
               zlib.dev
