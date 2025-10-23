@@ -51,11 +51,9 @@ LIGHT_ORANGE="\[\033[38;5;215m\]"   # Light orange (peach)
 function set_nix_env_name() {
     if [ -n "$IN_NIX_SHELL" ]; then
         if [ -n "$name" ]; then
-            # NIX_ENV_NAME_FOR_PROMPT="${LIGHT_ORANGE}[${name}] ${COLOR_NONE}"
-            NIX_ENV_NAME_FOR_PROMPT="${LIGHT_CORAL}[${name}] ${COLOR_NONE}"
+            NIX_ENV_NAME_FOR_PROMPT="${LIGHT_CORAL}[${name}]${COLOR_NONE} "
         else
-            # NIX_ENV_NAME_FOR_PROMPT="${LIGHT_ORANGE}[nix-shell] ${COLOR_NONE}"
-            NIX_ENV_NAME_FOR_PROMPT="${LIGHT_CORAL}[nix-shell] ${COLOR_NONE}"
+            NIX_ENV_NAME_FOR_PROMPT="${LIGHT_CORAL}[nix-shell]${COLOR_NONE} "
         fi
     else
         NIX_ENV_NAME_FOR_PROMPT=""
