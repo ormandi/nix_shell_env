@@ -22,6 +22,8 @@ EOF
   alias bash="exec $SHELL"
   alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
   alias vim="$NIX_VIM -u $NIX_VIMRC"
+  alias vimdiff="$NIX_VIM_DIFF -u $NIX_VIMRC"
+  alias whoami="echo $USER"
 fi
 
 # The various escape codes that we can use to color our prompt.
@@ -165,7 +167,7 @@ function set_bash_prompt () {
   set_git_branch
 
   # Set the bash prompt variable.
-  PS1="${NIX_ENV_NAME_FOR_PROMPT}${PYTHON_VIRTUALENV}${CYAN}\u@\h${COLOR_NONE}:${YELLOW}\w${COLOR_NONE}${BRANCH}${GREEN}[$(format_time ${BASH_COMMAND_TIMER_SHOW:-0})]${COLOR_NONE} ${PROMPT_SYMBOL} "
+  PS1="${NIX_ENV_NAME_FOR_PROMPT}${PYTHON_VIRTUALENV}${CYAN}${USER}@\h${COLOR_NONE}:${YELLOW}\w${COLOR_NONE}${BRANCH}${GREEN}[$(format_time ${BASH_COMMAND_TIMER_SHOW:-0})]${COLOR_NONE} ${PROMPT_SYMBOL} "
 }
 
 # Tell bash to execute this function just before displaying its prompt.

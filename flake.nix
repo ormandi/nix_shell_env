@@ -83,6 +83,7 @@
 
               # Export vim path.
               export NIX_VIM="${pkgs.vim}/bin/vim"
+              export NIX_VIM_DIFF="${pkgs.vim}/bin/vimdiff"
               export NIX_VIMRC="${self}/vimrc"
 
               echo "Development Environment"
