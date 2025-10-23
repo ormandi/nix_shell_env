@@ -205,6 +205,7 @@ set cursorlineopt=number
 " Solarized Dark inspired line numbers
 highlight LineNr ctermfg=240 ctermbg=NONE guifg=#586e75 guibg=NONE
 highlight CursorLineNr cterm=bold ctermfg=153 ctermbg=NONE gui=bold guifg=#81cff6 guibg=NONE
+highlight NonText ctermfg=117 guifg=#81cff6
 
 
 """"""""""""""""""""""""""""""
