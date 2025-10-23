@@ -468,6 +468,9 @@ let g:lightline = {
 " => Linting/Fixing Code
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Disable ALE's default search behavior for executables.
+let g:ale_path_adjust_fs = 0
+
 " ALE style
 let g:ale_sign_column_always = 0
 let g:ale_sign_error = '>>'
@@ -483,8 +486,10 @@ let g:ale_sign_column_always = 0
 
 " ALE linters (don't use `flake8`):
 let g:ale_linters = {
-      \   'python': ['mypy', 'pylint', 'pyright']
+      \    'cpp': ['clangd'],
+      \    'python': ['mypy', 'pylint', 'pyright'],
       \}
 let g:ale_fixers = {
+      \    'cpp': ['clang-format'],
       \    'python': ['yapf'],
       \}
