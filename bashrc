@@ -20,6 +20,7 @@ $NIX_BASH --rcfile $NIX_BASHRC "\$@"
 EOF
   chmod 755 ${SHELL}
   alias bash="exec $SHELL"
+  alias bazel="bazelisk"
   alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
   alias vim="$NIX_VIM -u $NIX_VIMRC"
   alias vimdiff="$NIX_VIM_DIFF -u $NIX_VIMRC"
