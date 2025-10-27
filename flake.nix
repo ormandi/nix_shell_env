@@ -39,6 +39,7 @@
               llvmPackages_21.lld          # Linker
 
               # Build tools that will use LLVM 21
+              bazelisk
               cmake
               ninja
               gnumake
@@ -76,6 +77,7 @@
               # Export bash path for use in aliases
               export NIX_BASH="${pkgs.bash}/bin/bash"
               export NIX_BASHRC="${self}/bashrc"
+              export NIX_BASH_COMPLETION="${pkgs.bash-completion}/share/bash-completion/bash_completion"
 
               # Export tmux path.
               export NIX_TMUX="${pkgs.tmux}/bin/tmux"

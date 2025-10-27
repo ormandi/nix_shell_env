@@ -171,6 +171,14 @@ function set_bash_prompt () {
 # Tell bash to execute this function just before displaying its prompt.
 PROMPT_COMMAND=set_bash_prompt
 
+# Bash completion.
+if [ -f "$NIX_BASH_COMPLETION" ]; then
+    source "$NIX_BASH_COMPLETION"
+fi
+
+# Hide zshell warning.
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 # Make `ls` colorful by default.
 alias ls='eza'
 alias ll='eza -lah --git'
@@ -189,16 +197,6 @@ if [ -z "$PYENV_LOADING" ]; then
 
     unset PYENV_LOADING
 fi
-
-# Bash completion.
-# Use bash-completion, if available
-if [ -f /etc/bash_completion ]; then
-  . /etc/bash_completion
-fi
-# source ~/bash_completion/out/bazel-complete.bash
-
-# Hide zshell warning.
-export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Add other aliases:
 alias ssh_gcuda='gcloud compute ssh "cuda-examples-dev" --zone "us-central1-a" --project "cudaexamples"'
