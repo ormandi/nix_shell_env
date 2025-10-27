@@ -16,7 +16,7 @@ if [ -n "$NIX_BASH" ]; then
   export SHELL="${HOME}/.nix_shell_wrapper.sh"
   cat << EOF > $SHELL
 #!/usr/bin/env bash
-$NIX_BASH --rcfile $NIX_BASHRC
+$NIX_BASH --rcfile $NIX_BASHRC "\$@"
 EOF
   chmod 755 ${SHELL}
   alias bash="exec $SHELL"
