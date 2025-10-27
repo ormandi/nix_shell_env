@@ -79,6 +79,14 @@
               export NIX_BASHRC="${self}/bashrc"
               export NIX_BASH_COMPLETION="${pkgs.bash-completion}/share/bash-completion/bash_completion"
 
+              # Generate bazel completion
+              BAZEL_COMPLETION="$HOME/.cache/nix-shell/bazel-complete.bash"
+              mkdir -p "$(dirname "$BAZEL_COMPLETION")"
+              if [ ! -f "$BAZEL_COMPLETION" ] || [ ! -s "$BAZEL_COMPLETION" ]; then
+                  ${pkgs.bazelisk}/bin/bazelisk help completion bash > "$BAZEL_COMPLETION" 2>/dev/null || true
+              fi
+              export NIX_BAZEL_COMPLETION="$BAZEL_COMPLETION"
+
               # Export tmux path.
               export NIX_TMUX="${pkgs.tmux}/bin/tmux"
               export NIX_TMUX_CONF="${self}/tmux.conf"

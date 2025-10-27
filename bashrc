@@ -21,6 +21,10 @@ EOF
   chmod 755 ${SHELL}
   alias bash="exec $SHELL"
   alias bazel="bazelisk"
+  if [ -f "$NIX_BAZEL_COMPLETION" ] && [ -s "$NIX_BAZEL_COMPLETION" ]; then
+    source "$NIX_BAZEL_COMPLETION"
+    complete -F _bazel__complete -o nospace bazelisk
+  fi
   alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
   alias vim="$NIX_VIM -u $NIX_VIMRC"
   alias vimdiff="$NIX_VIM_DIFF -u $NIX_VIMRC"
