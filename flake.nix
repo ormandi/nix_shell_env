@@ -2,7 +2,8 @@
   description = "My portable shell environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/01be09e86dd0d9924afab31f6a68a0045bcade04";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     tmux-mem-cpu-load = {
       url = "github:ormandi/tmux-mem-cpu-load/show_cpu_show_ram";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,21 +19,7 @@
       devShells = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-
-          # Check if CUDA should be enabled via environment variable
-          enableCuda = builtins.getEnv "ENABLE_CUDA" == "1";
-
-          # Conditional CUDA packages
-          cudaPackages = if enableCuda then with pkgs.cudaPackages; [
-            cudatoolkit
-            cuda_nvcc
-            cuda_cudart
-            cuda_cccl
-            libcublas
-            libcurand
-            libcusparse
-            cudnn
-          ] else [];
+          lib = pkgs.lib;
         in
         {
           default = (pkgs.mkShell.override {
@@ -43,7 +30,7 @@
             hardeningDisable = [ "fortify" "fortify3" ];
 
             buildInputs = with pkgs; [
-              bash
+              bashInteractive
               bash-completion
               pkg-config
               tmux
@@ -93,11 +80,11 @@
               gnused
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
-            ] ++ cudaPackages;
+            ];
 
             shellHook = ''
               # Export bash path for use in aliases
-              export NIX_BASH="${pkgs.bash}/bin/bash"
+              export NIX_BASH="${pkgs.bashInteractive}/bin/bash"
               export NIX_BASHRC="${self}/bashrc"
               export NIX_BASH_COMPLETION="${pkgs.bash-completion}/share/bash-completion/bash_completion"
 
@@ -119,7 +106,7 @@
               export NIX_VIMRC="${self}/vimrc"
 
               # Set the location of CUDA toolkit.
-              export CUDA_ROOT=$(dirname $(dirname $(which nvcc)))
+              export CUDA_HOME=$(dirname $(dirname $(which nvcc)))
 
               echo "Development Environment"
               echo "======================="
@@ -137,7 +124,7 @@
               # Launch bash with custom bashrc
               if [ -z "$NIX_SHELL_BASH_LOADED" ]; then
                   export NIX_SHELL_BASH_LOADED=1
-                  exec ${pkgs.bash}/bin/bash --rcfile ${self}/bashrc
+                  exec ${pkgs.bashInteractive}/bin/bash --rcfile ${self}/bashrc
               fi
             '';
           };
