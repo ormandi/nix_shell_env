@@ -20,16 +20,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1760524057,
-        "narHash": "sha256-EVAqOteLBFmd7pKkb0+FIUyzTF61VKi7YmvP1tw4nEw=",
+        "lastModified": 1761016216,
+        "narHash": "sha256-G/iC4t/9j/52i/nm+0/4ybBmAF4hzR8CNHC75qEhjHo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "544961dfcce86422ba200ed9a0b00dd4b1486ec5",
+        "rev": "481cf557888e05d3128a76f14c76397b7d7cc869",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixos-25.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -63,11 +63,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1759500854,
-        "narHash": "sha256-7D43FJgDZglBQdRBG2yMNBUhzvSksy7MaMfM48Y8nPY=",
+        "lastModified": 1761266336,
+        "narHash": "sha256-y6hM+61v/BE/kzzKZvz4+oemw8zvfEAo/8D8nQJcKzQ=",
         "owner": "ormandi",
         "repo": "tmux-mem-cpu-load",
-        "rev": "f2c1a3eb313b8c19b4a362aa65fdc48e67b3dc1e",
+        "rev": "a4e655351c5656fbea6cf6f0064a90d51f21fbfd",
         "type": "github"
       },
       "original": {

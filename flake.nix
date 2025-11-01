@@ -2,7 +2,7 @@
   description = "My portable shell environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     tmux-mem-cpu-load = {
       url = "github:ormandi/tmux-mem-cpu-load/show_cpu_show_ram";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,12 +18,30 @@
       devShells = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+
+          # Check if CUDA should be enabled via environment variable
+          enableCuda = builtins.getEnv "ENABLE_CUDA" == "1";
+
+          # Conditional CUDA packages
+          cudaPackages = if enableCuda then with pkgs.cudaPackages; [
+            cudatoolkit
+            cuda_nvcc
+            cuda_cudart
+            cuda_cccl
+            libcublas
+            libcurand
+            libcusparse
+            cudnn
+          ] else [];
         in
         {
           default = (pkgs.mkShell.override {
-            # Use LLVM 21 as the standard environment
-            stdenv = pkgs.llvmPackages_21.stdenv;
+            # Use LLVM 19 as the standard environment
+            stdenv = pkgs.llvmPackages_19.stdenv;
           }) {
+            # Currently fortification causes linking error with CUDA.
+            hardeningDisable = [ "fortify" "fortify3" ];
+
             buildInputs = with pkgs; [
               bash
               bash-completion
@@ -33,18 +51,23 @@
               git
               wget
 
-              # LLVM 21 development tools
-              llvmPackages_21.clang-tools  # clang-format, clang-tidy, clangd
-              llvmPackages_21.lldb         # Debugger
-              llvmPackages_21.lld          # Linker
+              # LLVM 19 development tools - CUDA toolkit compatible
+              llvmPackages_19.clang-tools  # clang-format, clang-tidy, clangd
+              llvmPackages_19.lldb         # Debugger
+              llvmPackages_19.lld          # Linker
+              llvmPackages_19.openmp       # OpenMP support for Clang
+              llvmPackages_19.stdenv.cc.cc.lib
+              llvmPackages_19.libcxx
+              llvmPackages_19.libcxxStdenv
+              llvmPackages_19.libcxxClang
 
-              # Build tools that will use LLVM 21
+              # Build tools
               bazelisk
               cmake
               ninja
               gnumake
 
-              # Libraries.
+              # Libraries
               bzip2.dev
               curl.dev
               libffi.dev
@@ -61,7 +84,6 @@
               # Python
               pyenv
               ruff
-              ty
               uv
 
               # Other tools
@@ -71,7 +93,7 @@
               gnused
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
-            ];
+            ] ++ cudaPackages;
 
             shellHook = ''
               # Export bash path for use in aliases
@@ -95,6 +117,9 @@
               export NIX_VIM="${pkgs.vim}/bin/vim"
               export NIX_VIM_DIFF="${pkgs.vim}/bin/vimdiff"
               export NIX_VIMRC="${self}/vimrc"
+
+              # Set the location of CUDA toolkit.
+              export CUDA_ROOT=$(dirname $(dirname $(which nvcc)))
 
               echo "Development Environment"
               echo "======================="
