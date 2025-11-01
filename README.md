@@ -41,5 +41,5 @@ nix develop github:ormandi/nix_shell_env --refresh
 Or with CUDA runtime enabled:
 
 ```bash
-ENABLE_CUDA=1 NIXPKGS_ALLOW_UNFREE=1 nix develop --impure
+ENABLE_CUDA=1 NIXPKGS_ALLOW_UNFREE=1 nix develop github:ormandi/nix_shell_env --impure --refresh
 ```
