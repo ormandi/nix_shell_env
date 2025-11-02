@@ -4,13 +4,21 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/01be09e86dd0d9924afab31f6a68a0045bcade04";
     # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     tmux-mem-cpu-load = {
       url = "github:ormandi/tmux-mem-cpu-load/show_cpu_show_ram";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    zig-overlay = {
+      url = "github:mitchellh/zig-overlay";
+      inputs.nixpkgs.follows = "nixpkgs"; # Ensure consistency
+    };
   };
 
-  outputs = { self, nixpkgs, tmux-mem-cpu-load }:
+  outputs = { self, nixpkgs, fenix, tmux-mem-cpu-load, zig-overlay }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -18,8 +26,13 @@
     {
       devShells = forAllSystems (system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
-          lib = pkgs.lib;
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [
+              fenix.overlays.default
+              zig-overlay.overlays.default
+            ];
+          };
         in
         {
           default = (pkgs.mkShell.override {
@@ -80,6 +93,24 @@
               gnused
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
+
+              # Zig
+              zig     # The Zig compiler (latest version from the overlay)
+              zls     # The Zig Language Server
+
+              # Rust
+              (pkgs.fenix.complete.withComponents [
+                "cargo"
+                "clippy"
+                "rust-analyzer"
+                "rust-src"
+                "rustc"
+                "rustfmt"
+              ])
+              cargo-edit
+              cargo-expand
+              cargo-generate
+              cargo-watch
             ];
 
             shellHook = ''
@@ -106,7 +137,10 @@
               export NIX_VIMRC="${self}/vimrc"
 
               # Set the location of CUDA toolkit.
-              export CUDA_HOME=$(dirname $(dirname $(which nvcc)))
+              NVCC_PATH=$(which nvcc)
+              if [ -f "$NVCC_PATH" ] && [ -s "$NVCC_PATH" ]; then
+                  export CUDA_HOME=$(dirname $(dirname $NVCC_PATH))
+              fi
 
               echo "Development Environment"
               echo "======================="
