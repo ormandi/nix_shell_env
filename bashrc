@@ -203,11 +203,6 @@ if [ -z "$PYENV_LOADING" ]; then
     unset PYENV_LOADING
 fi
 
-# Add other aliases:
-alias ssh_gcuda='gcloud compute ssh "cuda-examples-dev" --zone "us-central1-a" --project "cudaexamples"'
-alias stop_gcuda='gcloud compute instances stop "cuda-examples-dev" --zone="us-central1-a"  --project="cudaexamples"'
-alias start_gcuda='gcloud compute instances start "cuda-examples-dev" --zone="us-central1-a"  --project="cudaexamples"'
-
 # Add Claude code to the $PATH
 export PATH="$PATH:~/.local/bin/claude"
 
@@ -219,7 +214,5 @@ export PATH="$PATH:$ZVM_INSTALL/"
 # tmux pane title alias.
 alias pane-title='printf "\033]2;%s\033\\" "$1"'
 
-# Show aliases.
-# echo "Available aliases"
-# echo "================="
-# alias
+# Make sure ghostty works as a normal terminal.
+export TERM=xterm-256color

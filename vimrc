@@ -468,6 +468,9 @@ let g:lightline = {
 " => Linting/Fixing Code
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Enable ALE globally
+let g:ale_enabled = 1
+
 " Disable ALE's default search behavior for executables.
 let g:ale_path_adjust_fs = 0
 
@@ -476,6 +479,8 @@ let g:ale_sign_column_always = 0
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '->'
 let g:ale_sign_column_always = 0
+
+" ALE debug if something goes wrong.
 " let g:ale_debug = 1
 
 " Make ALE sign column transparent
@@ -483,11 +488,23 @@ highlight SignColumn ctermbg=NONE guibg=NONE
 highlight ALEErrorSign ctermbg=NONE guibg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE guibg=NONE ctermfg=yellow
 
-" ALE linters (don't use `flake8`):
+" Turn on on‑save linting/fixing
+" let g:ale_lint_on_save = 1
+let g:ale_fix_on_save  = 1
+
+" Correct `rust_analyzer` <-> `rust-analyzer` issue.
+if executable('rust-analyzer')
+  let s:rust_analyzer_path = trim(system('which rust-analyzer'))
+  let g:ale_rust_analyzer_executable = s:rust_analyzer_path
+else
+  echohl WarningMsg | echom 'rust-analyzer not found in $PATH' | echohl None
+endif
+
+" ALE linters:
 let g:ale_linters = {
       \    'cpp': ['clangd'],
       \    'python': ['ruff'],
-      \    'rust': ['rust-analyzer']
+      \    'rust': ['rust_analyzer']
       \}
 let g:ale_fixers = {
       \    'cpp': ['clang-format'],
