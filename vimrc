@@ -475,21 +475,22 @@ let g:ale_path_adjust_fs = 0
 let g:ale_sign_column_always = 0
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '->'
+let g:ale_sign_column_always = 0
+" let g:ale_debug = 1
 
 " Make ALE sign column transparent
 highlight SignColumn ctermbg=NONE guibg=NONE
 highlight ALEErrorSign ctermbg=NONE guibg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE guibg=NONE ctermfg=yellow
 
-" " Optional: only show sign column when there are errors/warnings
-let g:ale_sign_column_always = 0
-
 " ALE linters (don't use `flake8`):
 let g:ale_linters = {
       \    'cpp': ['clangd'],
-      \    'python': ['mypy', 'pylint', 'pyright'],
+      \    'python': ['ruff'],
+      \    'rust': ['rust-analyzer']
       \}
 let g:ale_fixers = {
       \    'cpp': ['clang-format'],
-      \    'python': ['yapf'],
+      \    'python': ['ruff'],
+      \    'rust': ['rustfmt']
       \}
