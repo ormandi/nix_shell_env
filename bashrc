@@ -196,9 +196,18 @@ alias llt5='eza -lah --git --tree --level 5'
 if [ -z "$PYENV_LOADING" ]; then
     export PYENV_LOADING="true"
 
+    export PYENV_ROOT="${HOME}/.pyenv/"
     export PYENV_INIT_TEMP_FILE=$(mktemp)
     pyenv init - --no-push-path --no-rehash $SHELL > $PYENV_INIT_TEMP_FILE
     source $PYENV_INIT_TEMP_FILE
+
+    export PYENV_VIRTUAL_ENV_DIR="${PYENV_ROOT}/plugins/pyenv-virtualenv"
+    if [ ! -d "${PYENV_VIRTUAL_ENV_DIR}" ]; then
+        git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_VIRTUAL_ENV_DIR}
+    fi
+
+    pyenv virtualenv-init - > ${PYENV_INIT_TEMP_FILE}
+    source ${PYENV_INIT_TEMP_FILE}
 
     unset PYENV_LOADING
 fi
