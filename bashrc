@@ -106,9 +106,9 @@ function set_git_branch() {
 # previous command.
 function set_prompt_symbol () {
   if test $1 -eq 0 ; then
-      PROMPT_SYMBOL="\$"
+      PROMPT_SYMBOL="\n"
   else
-      PROMPT_SYMBOL="${LIGHT_RED}($1) ${COLOR_NONE}\$"
+      PROMPT_SYMBOL="${LIGHT_RED}($1) ${COLOR_NONE}\n"
   fi
 }
 
@@ -170,7 +170,7 @@ function set_bash_prompt () {
   set_git_branch
 
   # Set the bash prompt variable.
-  PS1="${NIX_ENV_NAME_FOR_PROMPT}${PYTHON_VIRTUALENV}${CYAN}${USER}@\h${COLOR_NONE}:${YELLOW}\w${COLOR_NONE}${BRANCH}${GREEN}[$(format_time ${BASH_COMMAND_TIMER_SHOW:-0})]${COLOR_NONE} ${PROMPT_SYMBOL} "
+  PS1="╭─ ${NIX_ENV_NAME_FOR_PROMPT}${PYTHON_VIRTUALENV}${CYAN}${USER}@\h${COLOR_NONE}:${YELLOW}\w${COLOR_NONE}${BRANCH}${GREEN}[$(format_time ${BASH_COMMAND_TIMER_SHOW:-0})]${COLOR_NONE} ${PROMPT_SYMBOL}╰○ "
 }
 
 # Tell bash to execute this function just before displaying its prompt.
