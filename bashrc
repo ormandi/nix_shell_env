@@ -98,7 +98,7 @@ function set_git_branch() {
       BRANCH="${PURPLE} (${branch})${COLOR_NONE} "
     fi
   else
-    BRANCH=""
+    BRANCH=" "
   fi
 }
 
