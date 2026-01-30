@@ -26,7 +26,8 @@ EOF
     complete -F _bazel__complete -o nospace bazelisk
   fi
   alias tmux="$NIX_TMUX -f $NIX_TMUX_CONF"
-  alias vim="$NIX_VIM -u $NIX_VIMRC"
+  export EDITOR="$NIX_VIM -u $NIX_VIMRC"
+  alias vim="$EDITOR"
   alias vimdiff="$NIX_VIM_DIFF -u $NIX_VIMRC"
   alias whoami="echo $USER"
 fi
