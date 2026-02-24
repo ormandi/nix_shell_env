@@ -227,3 +227,7 @@ alias pane-title='printf "\033]2;%s\033\\" "$1"'
 
 # Make sure ghostty works as a normal terminal.
 export TERM=xterm-256color
+
+# Ensure that no Nix-based python binary is on the path
+# to ensure Python is entirely managed by `pyenv`.
+export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v python | paste -sd ":")
