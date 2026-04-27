@@ -195,6 +195,9 @@ alias llt3='eza -lah --git --tree --level 3'
 alias llt4='eza -lah --git --tree --level 4'
 alias llt5='eza -lah --git --tree --level 5'
 
+# Make bat useable.
+alias bat='bat --paging=never'
+
 if [ -z "$PYENV_LOADING" ]; then
     export PYENV_LOADING="true"
 
