@@ -31,6 +31,7 @@ EOF
   alias vim="$EDITOR"
   alias vimdiff="$NIX_VIM_DIFF -u $NIX_VIMRC"
   alias whoami="echo $USER"
+  mkdir -p $TMPDIR
 fi
 
 # The various escape codes that we can use to color our prompt.
@@ -73,34 +74,58 @@ function parse_git_branch(){
 }
 
 # Determine the branch/state information for this git repository.
+#
+# A single `git status --porcelain --branch` call yields the branch name,
+# the dirty state, and the ahead count, so the prompt only spawns one git
+# process instead of four (branch + status + rev-parse + rev-list).
 function set_git_branch() {
-  # Get the name of the branch.
-  branch=$(parse_git_branch)
-  
-  if [ -n "$branch" ]; then
-    local status_symbol=""
-    
-    # Check if working directory is dirty
-    if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-      status_symbol="*"
-    fi
-    
-    # Check if branch is ahead of remote
-    local upstream=$(git rev-parse --abbrev-ref @{upstream} 2>/dev/null)
-    if [ -n "$upstream" ]; then
-      local commits_ahead=$(git rev-list --count @{upstream}..HEAD)
-      if [ "$commits_ahead" -gt 0 ]; then
-        status_symbol="${status_symbol}↑"
-      fi
-    fi
-    
-    if [ -n "$status_symbol" ]; then
-      BRANCH="${PURPLE} (${status_symbol}${branch})${COLOR_NONE} "
-    else
-      BRANCH="${PURPLE} (${branch})${COLOR_NONE} "
-    fi
-  else
+  local status_output
+  status_output=$(git status --porcelain --branch 2>/dev/null)
+
+  # Not a git repository.
+  if [ -z "$status_output" ]; then
     BRANCH=" "
+    return
+  fi
+
+  # The header line looks like "## branch...remote/branch [ahead N, behind M]".
+  local header=${status_output%%$'\n'*}
+  local info=${header#\#\# }
+
+  # Fresh repository with no commits yet: match the previous "no branch" look.
+  case "$info" in
+    "No commits yet"*)
+      BRANCH=" "
+      return
+      ;;
+  esac
+
+  local branch
+  case "$info" in
+    "HEAD (no branch)")
+      # Detached HEAD; fall back to the descriptive name git branch reports.
+      branch=$(parse_git_branch)
+      ;;
+    *)
+      # Strip the "...remote/branch [ahead N]" tracking suffix, if any.
+      branch=${info%%...*}
+      ;;
+  esac
+
+  local status_symbol=""
+  # Any line after the header means the working directory is dirty.
+  if [ "${status_output#*$'\n'}" != "$status_output" ]; then
+    status_symbol="*"
+  fi
+  # Ahead of the upstream branch.
+  case "$info" in
+    *"[ahead "*) status_symbol="${status_symbol}↑" ;;
+  esac
+
+  if [ -n "$status_symbol" ]; then
+    BRANCH="${PURPLE} (${status_symbol}${branch})${COLOR_NONE} "
+  else
+    BRANCH="${PURPLE} (${branch})${COLOR_NONE} "
   fi
 }
 
