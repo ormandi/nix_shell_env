@@ -91,6 +91,7 @@
               bat
               gawk
               gnused
+              graphviz
               mdcat
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
