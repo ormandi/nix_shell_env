@@ -33,6 +33,31 @@
               zig-overlay.overlays.default
             ];
           };
+
+          # pkgs.mdcat is 2.3.1, which predates table support (added in 2.4.0).
+          # This fork took over the crate after upstream was archived; it needs
+          # Rust >= 1.95, so build it with the fenix toolchain already in scope.
+          mdcatWithTables = (pkgs.makeRustPlatform {
+            cargo = pkgs.fenix.complete.cargo;
+            rustc = pkgs.fenix.complete.rustc;
+          }).buildRustPackage {
+            pname = "mdcat";
+            version = "2.15.0";
+            src = pkgs.fetchFromGitHub {
+              owner = "BIRSAx2";
+              repo = "mdcat";
+              rev = "mdcat-2.15.0";
+              hash = "sha256-wXj5UmOZCI1zSLNwGNBicKsapGq60pyqENzFrUEj2kw=";
+            };
+            cargoHash = "sha256-5KzLHg7TJPalxqd+EqUhOiCTDMbEk/MrRYJOg39PgWk=";
+            nativeBuildInputs = [ pkgs.pkg-config ];
+            buildInputs = with pkgs; [ curl openssl ];
+            # 2.15.0 links libcurl dynamically (2.3.1 did not); RPATH shrink
+            # drops it, so put it back.
+            postFixup = "patchelf --add-rpath ${pkgs.curl.out}/lib $out/bin/mdcat";
+            auditable = false;  # this nixpkgs' cargo-auditable rejects edition 2024
+            doCheck = false;    # upstream tests need network and a real terminal
+          };
         in
         {
           default = (pkgs.mkShell.override {
@@ -92,7 +117,7 @@
               gawk
               gnused
               graphviz
-              mdcat
+              mdcatWithTables
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
 
