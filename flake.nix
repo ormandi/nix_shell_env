@@ -34,12 +34,19 @@
             ];
           };
 
+          staticPkgs = pkgs.pkgsStatic;
+          staticTarget = staticPkgs.stdenv.hostPlatform.rust.rustcTarget;
+          staticRust = pkgs.fenix.combine [
+            pkgs.fenix.complete.cargo
+            pkgs.fenix.complete.rustc
+            pkgs.fenix.targets.${staticTarget}.latest.rust-std
+          ];
+
           # pkgs.mdcat is 2.3.1, which predates table support (added in 2.4.0).
-          # This fork took over the crate after upstream was archived; it needs
-          # Rust >= 1.95, so build it with the fenix toolchain already in scope.
-          mdcatWithTables = (pkgs.makeRustPlatform {
-            cargo = pkgs.fenix.complete.cargo;
-            rustc = pkgs.fenix.complete.rustc;
+          # This fork took over the crate after upstream was archived.
+          mdcatWithTables = (staticPkgs.makeRustPlatform {
+            cargo = staticRust;
+            rustc = staticRust;
           }).buildRustPackage {
             pname = "mdcat";
             version = "2.15.0";
@@ -50,11 +57,36 @@
               hash = "sha256-wXj5UmOZCI1zSLNwGNBicKsapGq60pyqENzFrUEj2kw=";
             };
             cargoHash = "sha256-5KzLHg7TJPalxqd+EqUhOiCTDMbEk/MrRYJOg39PgWk=";
+            # Every library links statically out of this pinned nixpkgs.
             nativeBuildInputs = [ pkgs.pkg-config ];
-            buildInputs = with pkgs; [ curl openssl ];
-            # 2.15.0 links libcurl dynamically (2.3.1 did not); RPATH shrink
-            # drops it, so put it back.
-            postFixup = "patchelf --add-rpath ${pkgs.curl.out}/lib $out/bin/mdcat";
+            # libcurl.pc lists these under Requires, and pkg-config refuses to
+            # answer unless every one resolves (Linux). On Darwin they supply
+            # the -L paths that RUSTFLAGS' -l flags resolve against.
+            buildInputs = (with staticPkgs; [
+              curl openssl zlib zstd libidn2 libunistring libpsl libssh2 nghttp2
+            ])
+              # It is needed for static `libcurl`.
+              ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin
+                (with pkgs.darwin.apple_sdk.frameworks; [
+                  CoreFoundation
+                  CoreServices
+                  Security
+                  SystemConfiguration
+                ]);
+            env = {
+              # buildInputs only contributes -L paths, and on Darwin curl-sys
+              # emits a bare `-l curl` without consulting pkg-config, so name
+              # the rest of libcurl.pc's Libs by hand or they go unresolved.
+              RUSTFLAGS = pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin
+                ("-l nghttp2 -l idn2 -l unistring -l ssh2 -l psl "
+                + "-l ssl -l crypto -l zstd -l z "
+                + "-l framework=SystemConfiguration");
+              PKG_CONFIG_ALL_STATIC = "1";
+              OPENSSL_STATIC = "1";
+              OPENSSL_NO_VENDOR = "1";
+              OPENSSL_LIB_DIR = "${pkgs.lib.getLib staticPkgs.openssl}/lib";
+              OPENSSL_INCLUDE_DIR = "${pkgs.lib.getDev staticPkgs.openssl}/include";
+            };
             auditable = false;  # this nixpkgs' cargo-auditable rejects edition 2024
             doCheck = false;    # upstream tests need network and a real terminal
           };
@@ -64,7 +96,6 @@
             # Use LLVM 19 as the standard environment
             stdenv = pkgs.llvmPackages_19.stdenv;
           }) {
-            # Currently fortification causes linking error with CUDA.
             hardeningDisable = [ "fortify" "fortify3" ];
 
             buildInputs = with pkgs; [
