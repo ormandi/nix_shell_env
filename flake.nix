@@ -90,6 +90,20 @@
             auditable = false;  # this nixpkgs' cargo-auditable rejects edition 2024
             doCheck = false;    # upstream tests need network and a real terminal
           };
+
+          # Drop cgo so Go uses its own DNS resolver; glibc's dlopens the
+          # host's libnss_*.so. netgo replaces the package's netcgo tag.
+          k9sHermetic = pkgs.k9s.overrideAttrs (old: {
+            CGO_ENABLED = 0;
+            tags = [ "netgo" ];
+            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeBinaryWrapper ];
+            # k9s execs kubectl to attach, exec and edit; kubectl execs
+            # $KUBE_EDITOR, falling back to vi, which vim provides.
+            postInstall = old.postInstall + ''
+              wrapProgram $out/bin/k9s \
+                --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.kubectl pkgs.vim ]}
+            '';
+          });
         in
         {
           default = (pkgs.mkShell.override {
@@ -148,6 +162,7 @@
               gawk
               gnused
               graphviz
+              k9sHermetic
               mdcatWithTables
               util-linux
               tmux-mem-cpu-load.packages.${system}.default
