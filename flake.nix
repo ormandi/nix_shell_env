@@ -157,6 +157,8 @@
               uv
 
               # Other tools
+              direnv
+              nix-direnv
               eza
               bat
               gawk
