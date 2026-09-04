@@ -4,6 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/01be09e86dd0d9924afab31f6a68a0045bcade04";
     # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # k9s past 0.32.5 needs Go >= 1.24, which the pinned nixpkgs above lacks
+    # (it caps at Go 1.23). A separate, recent nixpkgs supplies a current k9s
+    # and its matching toolchain (plus gke-gcloud-auth-plugin) without
+    # unpinning the rest of the environment.
+    nixpkgs-k9s.url = "github:NixOS/nixpkgs/nixos-25.11";
+
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,7 +25,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, fenix, tmux-mem-cpu-load, zig-overlay }:
+  outputs = { self, nixpkgs, nixpkgs-k9s, fenix, tmux-mem-cpu-load, zig-overlay }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -33,6 +40,10 @@
               zig-overlay.overlays.default
             ];
           };
+
+          # Recent nixpkgs used solely for k9s + its GKE auth plugin (see the
+          # nixpkgs-k9s input). Everything else stays on the pin above.
+          pkgsK9s = import nixpkgs-k9s { inherit system; };
 
           staticPkgs = pkgs.pkgsStatic;
           staticTarget = staticPkgs.stdenv.hostPlatform.rust.rustcTarget;
@@ -91,17 +102,28 @@
             doCheck = false;    # upstream tests need network and a real terminal
           };
 
+          # k9s' in-process client-go execs the GKE credential plugin named in
+          # the kubeconfig's user.exec block to mint tokens, so the plugin must
+          # be on k9s' PATH. It ships only as a google-cloud-sdk component (no
+          # standalone attr); that also puts gcloud on PATH, which the plugin
+          # uses to refresh credentials.
+          gkeAuthPlugin = pkgsK9s.google-cloud-sdk.withExtraComponents [
+            pkgsK9s.google-cloud-sdk.components.gke-gcloud-auth-plugin
+          ];
+
           # Drop cgo so Go uses its own DNS resolver; glibc's dlopens the
           # host's libnss_*.so. netgo replaces the package's netcgo tag.
-          k9sHermetic = pkgs.k9s.overrideAttrs (old: {
-            CGO_ENABLED = 0;
+          # (CGO_ENABLED lives in `env` for this nixpkgs' buildGoModule.)
+          k9sHermetic = pkgsK9s.k9s.overrideAttrs (old: {
+            env = (old.env or { }) // { CGO_ENABLED = 0; };
             tags = [ "netgo" ];
-            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeBinaryWrapper ];
-            # k9s execs kubectl to attach, exec and edit; kubectl execs
+            nativeBuildInputs = old.nativeBuildInputs ++ [ pkgsK9s.makeBinaryWrapper ];
+            # k9s execs kubectl to attach, exec and edit, and (via client-go)
+            # the GKE credential plugin from the kubeconfig; kubectl execs
             # $KUBE_EDITOR, falling back to vi, which vim provides.
             postInstall = old.postInstall + ''
               wrapProgram $out/bin/k9s \
-                --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.kubectl pkgs.vim ]}
+                --prefix PATH : ${pkgs.lib.makeBinPath [ pkgsK9s.kubectl pkgs.vim gkeAuthPlugin ]}
             '';
           });
         in
