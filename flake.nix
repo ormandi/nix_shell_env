@@ -178,6 +178,11 @@
               ruff
               uv
 
+              # Kubernetes
+              kubectl
+              kubernetes-helm
+              kubelogin
+
               # Other tools
               direnv
               nix-direnv
