@@ -15,6 +15,10 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pi = {
+      url = "github:ormandi/pi-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     tmux-mem-cpu-load = {
       url = "github:ormandi/tmux-mem-cpu-load/show_cpu_show_ram";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +29,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-k9s, fenix, tmux-mem-cpu-load, zig-overlay }:
+  outputs = { self, nixpkgs, nixpkgs-k9s, fenix, pi, tmux-mem-cpu-load, zig-overlay }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -194,6 +198,7 @@
               k9sHermetic
               mdcatWithTables
               util-linux
+              pi.packages.${system}.default
               tmux-mem-cpu-load.packages.${system}.default
 
               # Zig
