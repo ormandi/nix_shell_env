@@ -127,15 +127,15 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-k9s"
         ]
       },
       "locked": {
-        "lastModified": 1789430211,
-        "narHash": "sha256-v8xPQM0HB4eXvw7TGMx3Hdy43a8CwxZr8jPPhPAGms0=",
+        "lastModified": 1789435729,
+        "narHash": "sha256-QF0c+tHhEkjq5IIuZjWqi54Obo2cXl+tMvoyOz50kfQ=",
         "owner": "ormandi",
         "repo": "pi-nix",
-        "rev": "d5ce7af844c2ab2026e69400cbd2e75d88679c48",
+        "rev": "81e28965c4b584c5e252a72102099aee9e95e976",
         "type": "github"
       },
       "original": {
