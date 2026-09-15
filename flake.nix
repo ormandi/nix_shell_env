@@ -1,17 +1,6 @@
 {
   description = "My portable shell environment";
 
-  # Pull pi's prebuilt output from the cache its CI pushes to. Nix prompts
-  # before trusting these on first use unless the substituter is already in
-  # nix.conf; answering yes is enough, since the key below is what verifies
-  # the paths.
-  nixConfig = {
-    extra-substituters = [ "https://ormandi-pi.cachix.org" ];
-    extra-trusted-public-keys = [
-      "ormandi-pi.cachix.org-1:pnfQdMO8AmoVnExIEbThbsSTRlXvGEI5k1g4+YOZhOA="
-    ];
-  };
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/01be09e86dd0d9924afab31f6a68a0045bcade04";
     # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -26,8 +15,7 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Follows nixpkgs-k9s, not nixpkgs: pi-nix builds against nixos-25.11, and
-    # matching it is what lets the ormandi-pi cache supply the prebuilt output.
+    # Follows nixpkgs-k9s: pi-nix targets nixos-25.11, not the pin above.
     pi = {
       url = "github:ormandi/pi-nix";
       inputs.nixpkgs.follows = "nixpkgs-k9s";
