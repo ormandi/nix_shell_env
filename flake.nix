@@ -62,6 +62,18 @@
                 --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.kubectl pkgs.vim gkeAuthPlugin ]}
             '';
           });
+
+          # pi installs extensions (npm: and git: sources alike) by running
+          # npm, and their install scripts run node. Only pi's PATH gets them;
+          # suffixed so a node already on PATH wins.
+          piWithNpm = pkgs.symlinkJoin {
+            name = "pi-with-npm";
+            paths = [ pi.packages.${system}.default ];
+            nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/pi --suffix PATH : ${pkgs.lib.makeBinPath [ pkgs.nodejs ]}
+            '';
+          };
         in
         {
           default = (pkgs.mkShell.override {
@@ -130,7 +142,7 @@
               k9sHermetic
               mdcat
               util-linux
-              pi.packages.${system}.default
+              piWithNpm
               tmux-mem-cpu-load.packages.${system}.default
 
               # Zig
