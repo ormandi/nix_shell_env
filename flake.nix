@@ -63,6 +63,19 @@
             '';
           });
 
+          # The opencv derivation has no enableStatic argument, so the only
+          # lever is cmake's own BUILD_SHARED_LIBS. A static archive links its
+          # objects straight into the binary, so the stdenv must match the
+          # clang this shell compiles with and LTO cannot stay on. Enabling
+          # gtk3 gives imshow a backend on Linux; darwin finds Cocoa itself.
+          opencvStatic = (pkgs.opencv.override {
+            stdenv = pkgs.llvmPackages_19.stdenv;
+            enableLto = false;
+            enableGtk3 = pkgs.stdenv.hostPlatform.isLinux;
+          }).overrideAttrs (old: {
+            cmakeFlags = old.cmakeFlags ++ [ "-DBUILD_SHARED_LIBS=OFF" ];
+          });
+
           # pi installs extensions (npm: and git: sources alike) by running
           # npm, and their install scripts run node. Only pi's PATH gets them;
           # suffixed so a node already on PATH wins.
@@ -120,6 +133,13 @@
               xmlsec.dev
               xz.dev  # provides liblzma
               zlib.dev
+
+              opencvStatic
+              libjpeg
+              libpng
+              libtiff
+              libwebp
+              openjpeg
 
               # Python
               pyenv
@@ -204,6 +224,7 @@
               echo "Compiler: $(clang++ --version | head -n 1)"
               echo "CMake: $(cmake --version | head -n 1)"
               echo "Pyenv: $(pyenv --version | head -n 1)"
+              echo "OpenCV: $(pkg-config --modversion opencv4) (static)"
               echo ""
 
               # Launch bash with custom bashrc
