@@ -76,6 +76,26 @@
             cmakeFlags = old.cmakeFlags ++ [ "-DBUILD_SHARED_LIBS=OFF" ];
           });
 
+          # nixpkgs ships bazelisk 1.28.1, but bazel asks for 1.30.0. Same
+          # recipe, newer source. 1.30.0's go.mod wants go 1.27.3 and this
+          # nixpkgs tops out at 1.27.1, a patch release apart, so the floor
+          # is relaxed to let the build start.
+          bazeliskLatest = (pkgs.bazelisk.override {
+            buildGoModule = pkgs.buildGo127Module;
+          }).overrideAttrs (old: {
+            version = "1.30.0";
+            src = pkgs.fetchFromGitHub {
+              owner = "bazelbuild";
+              repo = "bazelisk";
+              tag = "v1.30.0";
+              hash = "sha256-1WZuycxXZ7jiu7GX8ZfwcgnNEengGTUBN09jht+cTZA=";
+            };
+            vendorHash = "sha256-oycCqzUAn/lNFjeLjM+PQfYNscaTi5E9D7Pnv8jrO8M=";
+            postPatch = (old.postPatch or "") + ''
+              substituteInPlace go.mod --replace-fail "go 1.27.3" "go 1.27.1"
+            '';
+          });
+
           # pi installs extensions (npm: and git: sources alike) by running
           # npm, and their install scripts run node. Only pi's PATH gets them;
           # suffixed so a node already on PATH wins.
@@ -115,7 +135,7 @@
               llvmPackages_19.libcxxClang
 
               # Build tools
-              bazelisk
+              bazeliskLatest
               cmake
               ninja
               gnumake
@@ -194,7 +214,7 @@
               BAZEL_COMPLETION="$HOME/.cache/nix-shell/bazel-complete.bash"
               mkdir -p "$(dirname "$BAZEL_COMPLETION")"
               if [ ! -f "$BAZEL_COMPLETION" ] || [ ! -s "$BAZEL_COMPLETION" ]; then
-                  ${pkgs.bazelisk}/bin/bazelisk help completion bash > "$BAZEL_COMPLETION" 2>/dev/null || true
+                  ${bazeliskLatest}/bin/bazelisk help completion bash > "$BAZEL_COMPLETION" 2>/dev/null || true
               fi
               export NIX_BAZEL_COMPLETION="$BAZEL_COMPLETION"
 
