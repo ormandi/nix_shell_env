@@ -243,7 +243,7 @@ if [ -z "$PYENV_LOADING" ]; then
 fi
 
 # Add Claude code to the $PATH
-export PATH="$PATH:~/.local/bin/claude"
+export PATH="$PATH:$HOME/.local/bin"
 
 # ZVM
 export ZVM_INSTALL="$HOME/.zvm/self"
@@ -259,3 +259,7 @@ export TERM=xterm-256color
 # Ensure that no Nix-based python binary is on the path
 # to ensure Python is entirely managed by `pyenv`.
 export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v python | paste -sd ":")
+
+# Machine-local, private additions (kept out of this public repo), e.g. secrets
+# or per-machine tools. Create ~/.bashrc.local on each machine as needed.
+[ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
